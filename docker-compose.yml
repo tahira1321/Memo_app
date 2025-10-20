@@ -34,11 +34,6 @@ services:
       timeout: 5s
       # 5回連続で成功したらHEALTHYとみなす
       retries: 5
-    # 2-5-1. dbサービスが起動し、準備が整うのを待ってから web サービスを起動
-    depends_on:
-      db:
-        # dbサービスがHEALTHYになるまで待つ
-        condition: service_healthy
 
   # 3-1. Application Service(Flask)
   web:
@@ -60,9 +55,14 @@ services:
     # 開発中にローカルのコードを変更すると、コンテナ内のコードも自動で更新される（ホットリロード）
     volumes:
       - .:/app
+    # 3-1-6. dbサービスが起動し、準備が整うのを待ってから web サービスを起動
+    depends_on:
+      db:
+        # dbサービスがHEALTHYになるまで待つ
+        condition: service_healthy
 
     # コンテナの標準入出力を維持する設定
-    tty: ture
+    tty: true
 
 # 3. 永続化のためのボリューム定義
 volumes:
