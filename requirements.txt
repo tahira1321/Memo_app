@@ -1,0 +1,11 @@
+# 1. フレームワーク本体
+Flask
+
+# 2. データベース
+PyMySQL
+
+# 3. 設定・ユーティリティ
+python-dotenv
+
+# 4. その他
+cryptography
