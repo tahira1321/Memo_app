@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>メモの編集 - {{ memo.title }}</title>
+</head>
+<body>
+    <h1>メモの編集</h1>
+    <form method="POST" action="{{ url_for('edit', memo_id=memo.id) }}">
+      <p><strong>ID:</strong> {{ memo.id }}</p>
+
+      <p>
+        <label for="title_input">タイトル:</label><br>
+        <input type="text" id="title_input" name="title" value="{{ memo.title }}" required>
+      </p>
+      
+
+      <p>
+        <label for="content_area">本文:</label>
+        <textarea id="content_area" name="content" rows="10" required>{{ memo.content }}</textarea>
+      </p>
+      
+      <p>
+          <button type="submit">メモを更新</button>
+      </p>
+    </form>
+
+    <p><a href="/">メモ一覧に戻る</a></p>
+</body>
+</html>

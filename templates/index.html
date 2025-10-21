@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <title>簡易メモアプリ</title>
+  </head>
+  <body>
+    <h1>メモ一覧</h1>
+    {% if memos %}
+      <table border="1">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>メモタイトル</th>
+            <th>内容</th>
+            <th>作成日</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for memo in memos %}
+          <tr>
+            <td>{{ memo.id }}</td>
+            <td>{{ memo.title }}</td>
+            <td>{{ memo.content }}</td>
+            <td>{{ memo.create_date }}</td>
+
+            <td>
+              <a href="/edit/{{ memo.id }}"
+              style="color: blue;"
+              >
+                編集
+              </a>
+            </td>
+
+            <td>
+              <a href="/delete/{{ memo.id }}"
+              onclick="return confirm('メモ「{{ memo.title }}」を削除してもよろしいですか？')"
+              style="color: red;"
+              >
+                削除
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>登録されているメモはありません</p>
+    {% endif %}
+    <p><a href="/add">新しいメモを追加</a></p>
+  </body>
+</html>

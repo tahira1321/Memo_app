@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>メモの追加</title>
+</head>
+<body>
+    <h1>新しいメモの登録</h1>
+    
+    <form method="POST" action="/add">
+        <p>
+            <label for="title">タイトル:</label><br>
+            <input type="text" id="title" name="title" required>
+        </p>
+        <p>
+            <label for="content">本文:</label><br>
+            <input type="text" id="content" name="content">
+        </p>
+        <p>
+            <label for="create_date">作成日 (YYYY-MM-DD):</label><br>
+            <input type="text" id="create_date" name="create_date" placeholder="例: 2024-10-20">
+        </p>
+        <p>
+            <button type="submit">登録</button>
+        </p>
+    </form>
+
+    <p><a href="/">メモ一覧に戻る</a></p>
+</body>
+</html>
