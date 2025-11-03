@@ -3,67 +3,64 @@ version: '3.9'
 
 # 2. 各サービスを定義
 services:
-  # 2-1. Database Service(MySQL)
   db:
-    # 2-1-1. MySQLのバージョン指定
+		# a. コンテナの出所 + コンテナ名 image, build
     image: mysql:8.0
-    # 2-1-2. MySQLのコンテナ名を設定
     container_name: mysql_db
-    # 2-1-3. MySQLの各種設定を環境変数で定義
-    environment: ## ルートパスワードとアプリのユーザー名・パスワードとアプリのデータベースを定義
-      # ルートパスワード（本番ではシークレット管理ツール必須）
+		# b. 実行環境の設定 env_file, command
+    environment:
+		# ルートパスワードとアプリのユーザー名・パスワード・データベースを定義
       MYSQL_ROOT_PASSWORD: your_secure_root_password
-      # アプリケーションが使用するユーザー名
       MYSQL_USER: memo_app_user
-      # アプリケーションが使用するパスワード
       MYSQL_PASSWORD: memo_app_password
-      # アプリケーションが使用するデータベース
       MYSQL_DATABASE: memo_app_db
-    # 2-2-1. データベースのデータをローカルPCに永続化する設定
+		
+		# b. 実行環境の設定（※ environmentとは別の親キーとして定義が必要）
+    # 常に再起動するように設定
+    restart: always 
+      
+		# c. 永続化とリソース（I/O）: 外部やホストとどう連携するか？
     volumes:
       - db_data:/var/lib/mysql
-    # 2-3-1. 常に再起動するように設定
-    restart: always
-    # 2-4-1. MySQLコンテナの健康状態をチェックする設定
+		
+		# d. 依存関係とネットワーク、健全性: 他のサービスやネットワークとどう関わるか？
     healthcheck:
-      # MySQLに接続できるかテストするコマンド
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u$$MYSQL_USER", "-p$$MYSQL_PASSWORD"]
-      # 10秒ごとにチェック
       interval: 10s
-      # タイムアウト
       timeout: 5s
-      # 5回連続で成功したらHEALTHYとみなす
       retries: 5
-
-  # 3-1. Application Service(Flask)
+		
   web:
-    # 3-1-1. プロジェクトルートにある Dockerfile を使用してイメージをビルド
+		# a. コンテナの出所 + コンテナ名 image, build
     build: .
-    # 3-1-2. アプリケーションのコンテナ名を設定
     container_name: flask_app
-    # 3-1-3. ホストPCのポートをコンテナ内のポートにマッピング
-    ports:
-      - "5000:5000"
-    # 3-1-4. アプリがDBに接続するための情報を環境変数として渡す
+		# b. 実行環境の設定 env_file, command
     environment:
-      # 基本：DBホスト名は、Docker Composeのサービス名（db）を指定
+      # アプリがDBに接続するための情報を環境変数として渡す
       DB_HOST: db
       DB_USER: memo_app_user
       DB_PASSWORD: memo_app_password
       DB_NAME: memo_app_db
-    # 3-1-5. ローカルのソースコードをコンテナ内にマウント
-    # 開発中にローカルのコードを変更すると、コンテナ内のコードも自動で更新される（ホットリロード）
+    
+    # c. 永続化とリソース（I/O）: 外部やホストとどう連携するか？（※ environmentとは別の親キーとして定義が必要）
+    # ホストPCのポートをコンテナ内のポートにマッピング
+    ports:
+      - "5000:5000"
+
+    # b. 実行環境の設定（※ environmentとは別の親キーとして定義が必要）
+    # コンテナの標準入出力を維持する設定
+    tty: true
+
+		# c. 永続化とリソース（I/O）: 外部やホストとどう連携するか？
     volumes:
       - .:/app
-    # 3-1-6. dbサービスが起動し、準備が整うのを待ってから web サービスを起動
+		# d. 依存関係とネットワーク、健全性: 他のサービスやネットワークとどう関わるか？
     depends_on:
       db:
         # dbサービスがHEALTHYになるまで待つ
         condition: service_healthy
-
-    # コンテナの標準入出力を維持する設定
-    tty: true
-
-# 3. 永続化のためのボリューム定義
+		
+# 3. 永続化のためのボリューム定義 (トップレベル) volumes
 volumes:
   db_data:
+# 4. 依存関係とネットワーク (トップレベル) networks
